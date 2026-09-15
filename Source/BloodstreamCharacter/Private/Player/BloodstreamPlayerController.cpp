@@ -1,0 +1,15 @@
+#include "Player/BloodstreamPlayerController.h"
+#include "Player/BloodstreamCharacter.h"
+#include "Interaction/BloodstreamInteractionComponent.h"
+#include "Interaction/BloodstreamInteractionTypes.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+
+ABloodstreamPlayerController::ABloodstreamPlayerController(){ PrimaryActorTick.bCanEverTick=true; }
+ABloodstreamCharacter* ABloodstreamPlayerController::Character() const { return Cast<ABloodstreamCharacter>(GetPawn()); }
+void ABloodstreamPlayerController::BeginPlay(){ Super::BeginPlay(); if(ULocalPlayer* LP=GetLocalPlayer()) if(auto* S=LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()) if(DefaultMappingContext) S->AddMappingContext(DefaultMappingContext,0); }
+void ABloodstreamPlayerController::SetupInputComponent(){ Super::SetupInputComponent(); auto* E=Cast<UEnhancedInputComponent>(InputComponent); if(!E)return; if(MoveAction)E->BindAction(MoveAction,ETriggerEvent::Triggered,this,&ThisClass::InputMove); if(LookAction)E->BindAction(LookAction,ETriggerEvent::Triggered,this,&ThisClass::InputLook); if(SprintAction){E->BindAction(SprintAction,ETriggerEvent::Started,this,&ThisClass::InputSprintStart);E->BindAction(SprintAction,ETriggerEvent::Completed,this,&ThisClass::InputSprintStop);} if(CrouchAction)E->BindAction(CrouchAction,ETriggerEvent::Started,this,&ThisClass::InputCrouch); if(PrimaryInteractionAction)E->BindAction(PrimaryInteractionAction,ETriggerEvent::Started,this,&ThisClass::InputPrimary); if(InspectAction)E->BindAction(InspectAction,ETriggerEvent::Started,this,&ThisClass::InputInspect); if(CancelAction)E->BindAction(CancelAction,ETriggerEvent::Started,this,&ThisClass::InputCancel); }
+void ABloodstreamPlayerController::PlayerTick(float D){ Super::PlayerTick(D); if(auto* C=Character()) if(C->GetInteractionComponent()) C->GetInteractionComponent()->RefreshTarget(); }
+void ABloodstreamPlayerController::InputMove(const FInputActionValue& V){if(auto*C=Character())C->Move(V.Get<FVector2D>());} void ABloodstreamPlayerController::InputLook(const FInputActionValue& V){if(auto*C=Character())C->Look(V.Get<FVector2D>());} void ABloodstreamPlayerController::InputSprintStart(){if(auto*C=Character())C->SetSprinting(true);} void ABloodstreamPlayerController::InputSprintStop(){if(auto*C=Character())C->SetSprinting(false);} void ABloodstreamPlayerController::InputCrouch(){if(auto*C=Character())C->ToggleCrouch();}
+void ABloodstreamPlayerController::InputPrimary(){if(auto*C=Character())if(auto*I=C->GetInteractionComponent())if(I->BeginSelected(EBloodstreamInteractionVerb::Use))C->SetPlayerMode(EBloodstreamPlayerMode::Interacting);} void ABloodstreamPlayerController::InputInspect(){if(auto*C=Character())if(auto*I=C->GetInteractionComponent())if(I->BeginSelected(EBloodstreamInteractionVerb::Inspect))C->SetPlayerMode(EBloodstreamPlayerMode::Inspecting);} void ABloodstreamPlayerController::InputCancel(){if(auto*C=Character()){if(auto*I=C->GetInteractionComponent())I->CancelActive();C->SetPlayerMode(EBloodstreamPlayerMode::FreeMovement);}}

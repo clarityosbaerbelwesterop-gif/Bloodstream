@@ -8,10 +8,7 @@ public class BloodstreamCharacter : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new[]
         {
-            "Core",
-            "CoreUObject",
-            "Engine",
-            "BloodstreamCore"
+            "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "BloodstreamCore"
         });
     }
 }
