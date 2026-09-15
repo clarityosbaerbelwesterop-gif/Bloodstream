@@ -1,0 +1,35 @@
+name: M1 Foundation Static Validation
+
+on:
+  push:
+    branches:
+      - main
+      - build/m1-unreal-foundation
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  static-foundation-validation:
+    name: Static foundation validation (UE 5.8 not installed)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Validate repository foundation
+        run: python Scripts/validate_repo.py
+
+      - name: Declare runtime-validation boundary
+        run: |
+          echo "::notice::This workflow validates repository/source/config hygiene only. It does NOT claim a UE 5.8 compile, editor launch, automation run, smoke-map load, cook, or package."
