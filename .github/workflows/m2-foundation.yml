@@ -1,0 +1,19 @@
+name: M2 Player Camera Interaction Static Validation
+on:
+  push:
+    branches: [build/m2-player-camera-interaction]
+  pull_request:
+    branches: [build/m1-unreal-foundation, main]
+permissions:
+  contents: read
+jobs:
+  static-m2-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python Scripts/validate_repo.py
+      - run: python Scripts/validate_m2.py
+      - run: echo "::notice::Static validation only; no UE 5.8 compile/runtime claim."
