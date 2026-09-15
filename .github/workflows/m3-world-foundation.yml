@@ -1,0 +1,20 @@
+name: M3 Lindstripe World Static Validation
+on:
+  push:
+    branches: [build/m3-lindstripe-world-greybox]
+  pull_request:
+    branches: [build/m2-player-camera-interaction, main]
+permissions:
+  contents: read
+jobs:
+  static-m3-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python Scripts/validate_repo.py
+      - run: python Scripts/validate_m2.py
+      - run: python Scripts/validate_m3.py
+      - run: echo "::notice::Static source/data validation only; no UE 5.8 world/runtime claim."
