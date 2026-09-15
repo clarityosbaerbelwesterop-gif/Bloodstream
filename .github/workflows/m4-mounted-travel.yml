@@ -1,0 +1,20 @@
+name: M4 Mounted Travel Static Validation
+on:
+  push:
+    branches: [build/m4-horse-mounted-transport]
+  pull_request:
+    branches: [build/m3-lindstripe-world-greybox, main]
+permissions:
+  contents: read
+jobs:
+  static-m4-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.12'}
+      - run: python Scripts/validate_repo.py
+      - run: python Scripts/validate_m2.py
+      - run: python Scripts/validate_m3.py
+      - run: python Scripts/validate_m4.py
+      - run: echo "::notice::Static validation only; no UE 5.8 mounted-travel runtime claim."
