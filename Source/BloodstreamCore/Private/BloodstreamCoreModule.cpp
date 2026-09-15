@@ -11,4 +11,4 @@ public:
     }
 };
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FBloodstreamCoreModule, BloodstreamCore, "Bloodstream")
+IMPLEMENT_PRIMARY_GAME_MODULE(FBloodstreamCoreModule, BloodstreamCore, "Bloodstream");
