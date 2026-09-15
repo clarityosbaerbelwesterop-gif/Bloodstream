@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+SELF = Path(__file__).resolve()
 
 REQUIRED = [
     "Bloodstream.uproject",
@@ -111,6 +112,9 @@ def main() -> int:
         for pattern in SECRET_PATTERNS:
             if pattern.search(text):
                 fail(f"possible secret found in {path.relative_to(ROOT)}")
+        # Do not scan this validator's own regex literals as if they were real paths.
+        if path.resolve() == SELF:
+            continue
         for pattern in ABSOLUTE_MACHINE_PATHS:
             if pattern.search(text):
                 fail(f"machine-specific absolute path found in {path.relative_to(ROOT)}")
