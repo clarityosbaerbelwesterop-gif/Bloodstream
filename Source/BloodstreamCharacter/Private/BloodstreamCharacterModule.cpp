@@ -12,4 +12,4 @@ public:
     }
 };
 
-IMPLEMENT_MODULE(FBloodstreamCharacterModule, BloodstreamCharacter)
+IMPLEMENT_GAME_MODULE(FBloodstreamCharacterModule, BloodstreamCharacter);

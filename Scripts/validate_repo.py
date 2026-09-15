@@ -58,6 +58,18 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def candidate_text_files() -> list[Path]:
+    files: list[Path] = []
+    for path in ROOT.rglob("*"):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(ROOT)
+        if ".git" in relative.parts:
+            continue
+        files.append(path)
+    return files
+
+
 def main() -> int:
     missing = [path for path in REQUIRED if not (ROOT / path).is_file()]
     if missing:
@@ -93,28 +105,23 @@ def main() -> int:
             fail(f"persistent ID implementation references forbidden identity source: {forbidden_identity}")
 
     for path in ROOT.rglob("*"):
-        if not path.is_dir():
-            continue
-        if path.name in FORBIDDEN_DIR_NAMES:
+        if path.is_dir() and path.name in FORBIDDEN_DIR_NAMES:
             fail(f"generated Unreal directory is present in checkout: {path.relative_to(ROOT)}")
 
-    scan_roots = [ROOT / "Source", ROOT / "Config", ROOT / "Scripts", ROOT / ".github"]
-    scan_files = [ROOT / "Bloodstream.uproject"]
-    for scan_root in scan_roots:
-        if scan_root.exists():
-            scan_files.extend(p for p in scan_root.rglob("*") if p.is_file())
-
-    for path in scan_files:
+    for path in candidate_text_files():
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
+
         for pattern in SECRET_PATTERNS:
             if pattern.search(text):
                 fail(f"possible secret found in {path.relative_to(ROOT)}")
-        # Do not scan this validator's own regex literals as if they were real paths.
+
+        # Do not treat this validator's own regex literals as machine-path evidence.
         if path.resolve() == SELF:
             continue
+
         for pattern in ABSOLUTE_MACHINE_PATHS:
             if pattern.search(text):
                 fail(f"machine-specific absolute path found in {path.relative_to(ROOT)}")

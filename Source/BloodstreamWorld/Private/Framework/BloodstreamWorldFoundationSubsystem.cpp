@@ -4,7 +4,13 @@
 void UBloodstreamWorldFoundationSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
-    UE_LOG(LogBloodstreamWorld, Verbose, TEXT("World foundation subsystem initialized for %s."), *GetWorld()->GetName());
+
+    const UWorld* World = GetWorld();
+    UE_LOG(
+        LogBloodstreamWorld,
+        Verbose,
+        TEXT("World foundation subsystem initialized for %s."),
+        World != nullptr ? *World->GetName() : TEXT("<null-world>"));
 }
 
 void UBloodstreamWorldFoundationSubsystem::Deinitialize()

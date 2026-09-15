@@ -12,4 +12,4 @@ public:
     }
 };
 
-IMPLEMENT_MODULE(FBloodstreamWorldModule, BloodstreamWorld)
+IMPLEMENT_GAME_MODULE(FBloodstreamWorldModule, BloodstreamWorld);
