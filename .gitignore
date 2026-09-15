@@ -12,10 +12,17 @@ Plugins/**/Intermediate/
 BuildOutput/
 StagedBuilds/
 
+# Unreal Build directory: ignore generated content by default, whitelist only deliberate source-controlled inputs.
+Build/**
+!Build/README.md
+!Build/**/
+!Build/**/*.ico
+
 # IDE/editor generated files
 .vs/
 .idea/
 .vscode/
+.vsconfig
 *.sln
 *.suo
 *.opensdf
